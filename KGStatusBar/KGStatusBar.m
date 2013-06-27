@@ -56,11 +56,13 @@
 }
 
 - (void)showWithStatus:(NSString *)status barColor:(UIColor*)barColor textColor:(UIColor*)textColor{
-    if(!self.superview)
+    if (!self.superview) {
         [self.overlayWindow addSubview:self];
-    [self.overlayWindow setHidden:NO];
-    [self.topBar setHidden:NO];
+	}
     self.topBar.backgroundColor = barColor;
+    self.topBar.alpha = 0.0;
+    self.topBar.hidden = NO;
+    self.overlayWindow.hidden = NO;
     NSString *labelText = status;
     CGRect labelRect = CGRectZero;
     CGFloat stringWidth = 0;
@@ -78,6 +80,7 @@
     self.stringLabel.text = labelText;
     self.stringLabel.textColor = textColor;
     [UIView animateWithDuration:0.4 animations:^{
+		self.topBar.alpha = 1.0;
         self.stringLabel.alpha = 1.0;
     }];
     [self setNeedsDisplay];
@@ -86,6 +89,7 @@
 - (void) dismiss
 {
     [UIView animateWithDuration:0.4 animations:^{
+		self.topBar.alpha = 0.0;
         self.stringLabel.alpha = 0.0;
     } completion:^(BOOL finished) {
         [topBar removeFromSuperview];
