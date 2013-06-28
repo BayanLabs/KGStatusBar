@@ -15,7 +15,7 @@
 + (void)showWithStatus:(NSString*)status dismissAfter:(NSTimeInterval)interval;
 + (void)showSuccessWithStatus:(NSString*)status;
 + (void)showErrorWithStatus:(NSString*)status;
-+ (void)showProgressWithStatus:(NSString*)status progress:(float)progress;
++ (void)showSpinnerWithStatus:(NSString*)status progress:(float)progress;
 + (void)setProgress:(float)progress;
 + (void)dismiss;
 
