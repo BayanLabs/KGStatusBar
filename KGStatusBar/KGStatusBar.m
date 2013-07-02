@@ -108,7 +108,7 @@
 	[super layoutSubviews];
 	
 	topBar.frame = CGRectMake(0.f, 0.f, [self screenSize].width, STATUS_BAR_HEIGHT);
-	progressBar.frame = CGRectMake(0.f, 0.f, [self screenSize].width * self.progress, STATUS_BAR_HEIGHT);
+	progressBar.frame = CGRectMake(0.f, 0.f, [self screenSize].width * self.progress, STATUS_BAR_HEIGHT - 1);
 	
 	NSString *labelText = stringLabel.text;
     CGRect labelRect = CGRectZero;
@@ -230,8 +230,8 @@
 		return;
 	}
 	
-	progressBar = [[UIView alloc] initWithFrame:CGRectMake(0.f, 0.f, 0.f, STATUS_BAR_HEIGHT)];
-	progressBar.backgroundColor = [UIColor colorWithRed:75.0/255.0 green:200.0/255.0 blue:0.0/255.0 alpha:0.5];
+	progressBar = [[UIView alloc] initWithFrame:CGRectMake(0.f, 0.f, 0.f, STATUS_BAR_HEIGHT - 1)];
+	progressBar.backgroundColor = [UIColor colorWithRed:75.0/255.0 green:200.0/255.0 blue:0.0/255.0 alpha:0.45];
 	
 	[topBar addSubview:progressBar];
 	[topBar sendSubviewToBack:progressBar];
