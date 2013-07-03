@@ -21,6 +21,7 @@
 
 @property (nonatomic) float progress;
 @property (nonatomic) BOOL enabled;
+@property (nonatomic) BOOL topBarPinned;
 
 @end
 
@@ -38,6 +39,10 @@
 
 + (void)setEnabled:(BOOL)enabled {
 	[KGStatusBar sharedView].enabled = enabled;
+}
+
++ (void)setTopBarPinned:(BOOL)pinned {
+	[KGStatusBar sharedView].topBarPinned = pinned;
 }
 
 + (void)showWithStatus:(NSString*)status {
@@ -142,6 +147,16 @@
 	}
 }
 
+- (void)setTopBarPinned:(BOOL)newTopBarPinned {
+	_topBarPinned = newTopBarPinned;
+	
+	if (self.topBarPinned) {
+		[self showWithStatus:@"" barColor:nil textColor:nil showSpinner:NO];
+	} else {
+		[self dismiss];
+	}
+}
+
 - (void)setProgress:(float)newProgress {
 	_progress = newProgress;
 	NSTimeInterval animationDuration = (self.progress == 0 ? 0 : 0.35);
@@ -158,6 +173,10 @@
 	
     if (self.superview == nil) {
         [overlayWindow addSubview:self];
+	}
+	
+	if (barColor == nil) {
+		barColor = [UIColor blackColor];
 	}
 	
 	if (textColor == nil) {
