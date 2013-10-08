@@ -10,6 +10,17 @@
 
 #define STATUS_BAR_HEIGHT 20.0
 
+@interface KGStatusBarWindow : UIWindow
+@end
+
+@implementation KGStatusBarWindow
+
+- (UIViewController *)rootViewController {
+	return [UIApplication sharedApplication].keyWindow.rootViewController;
+}
+
+@end
+
 @interface KGStatusBar () {
 	UIWindow *overlayWindow;
 	UIView *topBar;
@@ -222,7 +233,7 @@
 		return;
 	}
 	
-	overlayWindow = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+	overlayWindow = [[KGStatusBarWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	overlayWindow.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	overlayWindow.backgroundColor = [UIColor clearColor];
 	overlayWindow.userInteractionEnabled = NO;
