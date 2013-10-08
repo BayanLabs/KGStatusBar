@@ -12,6 +12,7 @@
 
 + (void)setEnabled:(BOOL)enabled;
 + (void)setTopBarPinned:(BOOL)pinned;
++ (void)setTopBarDefaultBackgroundColor:(UIColor *)color;
 + (void)showWithStatus:(NSString*)status;
 + (void)showWithStatus:(NSString*)status dismissAfter:(NSTimeInterval)interval;
 + (void)showSuccessWithStatus:(NSString*)status;

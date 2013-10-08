@@ -8,7 +8,7 @@
 
 #import "KGStatusBar.h"
 
-#define STATUS_BAR_HEIGHT 20.0
+#define kStatusbarHeight 20.0
 
 @interface KGStatusBarWindow : UIWindow
 @end
@@ -33,6 +33,7 @@
 @property (nonatomic) float progress;
 @property (nonatomic) BOOL enabled;
 @property (nonatomic) BOOL topBarPinned;
+@property (nonatomic, strong) UIColor *topBarDefaultBackgroundColor;
 
 @end
 
@@ -56,38 +57,42 @@
 	[KGStatusBar sharedView].topBarPinned = pinned;
 }
 
++ (void)setTopBarDefaultBackgroundColor:(UIColor *)color {
+	[KGStatusBar sharedView].topBarDefaultBackgroundColor = color;
+}
+
 + (void)showWithStatus:(NSString*)status {
 	[self cancelPreviousPerformRequestsWithTarget:self selector:@selector(dismiss) object:self];
 	
-    [[KGStatusBar sharedView] showWithStatus:status barColor:[UIColor blackColor] textColor:nil showSpinner:NO];
+    [[KGStatusBar sharedView] showWithStatus:status barColor:nil textColor:nil showSpinner:NO];
 }
 
-+ (void)showWithStatus:(NSString*)status dismissAfter:(NSTimeInterval)interval {	
++ (void)showWithStatus:(NSString*)status dismissAfter:(NSTimeInterval)interval {
 	[self cancelPreviousPerformRequestsWithTarget:self selector:@selector(dismiss) object:self];
-
+	
     [self showWithStatus:status];
 	[self performSelector:@selector(dismiss) withObject:self afterDelay:interval];
 }
 
 + (void)showSuccessWithStatus:(NSString*)status {
 	[self cancelPreviousPerformRequestsWithTarget:self selector:@selector(dismiss) object:self];
-
+	
     [KGStatusBar showWithStatus:status];
     [self performSelector:@selector(dismiss) withObject:self afterDelay:2.0];
 }
 
 + (void)showErrorWithStatus:(NSString*)status {
 	[self cancelPreviousPerformRequestsWithTarget:self selector:@selector(dismiss) object:self];
-
+	
 	UIColor *errorBarColor = [UIColor colorWithRed:97.0/255.0 green:4.0/255.0 blue:4.0/255.0 alpha:1.0];
-    [[KGStatusBar sharedView] showWithStatus:status barColor:errorBarColor textColor:[UIColor whiteColor] showSpinner:NO];
+    [[KGStatusBar sharedView] showWithStatus:status barColor:errorBarColor textColor:nil showSpinner:NO];
 	[self performSelector:@selector(dismiss) withObject:self afterDelay:2.0];
 }
 
 + (void)showSpinnerWithStatus:(NSString *)status progress:(float)progress {
 	[self cancelPreviousPerformRequestsWithTarget:self selector:@selector(dismiss) object:self];
-
-    [[KGStatusBar sharedView] showWithStatus:status barColor:[UIColor blackColor] textColor:nil showSpinner:YES];
+	
+    [[KGStatusBar sharedView] showWithStatus:status barColor:nil textColor:nil showSpinner:YES];
 	[[KGStatusBar sharedView] setProgress:progress];
 }
 
@@ -107,7 +112,8 @@
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 		
 		_enabled = YES;
-		defaultTextColor = [UIColor colorWithRed:191.0/255.0 green:191.0/255.0 blue:191.0/255.0 alpha:1.0];
+		defaultTextColor = [UIColor whiteColor];
+		_topBarDefaultBackgroundColor = [UIColor blackColor];
 		
 		[self initializeView];
 		
@@ -123,8 +129,8 @@
 - (void)layoutSubviews {
 	[super layoutSubviews];
 	
-	topBar.frame = CGRectMake(0.f, 0.f, [self screenSize].width, STATUS_BAR_HEIGHT);
-	progressBar.frame = CGRectMake(0.f, 0.f, [self screenSize].width * self.progress, STATUS_BAR_HEIGHT - 1);
+	topBar.frame = CGRectMake(0.f, 0.f, [self screenSize].width, kStatusbarHeight);
+	progressBar.frame = CGRectMake(0.f, 0.f, [self screenSize].width * self.progress, kStatusbarHeight - 1);
 	
 	NSString *labelText = stringLabel.text;
     CGRect labelRect = CGRectZero;
@@ -135,11 +141,11 @@
         stringWidth = stringSize.width;
         stringHeight = stringSize.height;
         
-        labelRect = CGRectMake(roundf((topBar.frame.size.width / 2) - (stringWidth / 2)), 0, stringWidth, stringHeight);
+        labelRect = CGRectMake(roundf((topBar.frame.size.width / 2) - (stringWidth / 2)), roundf((topBar.frame.size.height / 2) - (stringHeight / 2)), stringWidth, stringHeight);
     }
     stringLabel.frame = labelRect;
 	
-	progressIndicator.center = CGPointMake(labelRect.origin.x - progressIndicator.frame.size.width, STATUS_BAR_HEIGHT / 2.0);
+	progressIndicator.center = CGPointMake(labelRect.origin.x - progressIndicator.frame.size.width, kStatusbarHeight / 2.0);
 }
 
 - (void)initializeView {
@@ -173,7 +179,7 @@
 	NSTimeInterval animationDuration = (self.progress == 0 ? 0 : 0.35);
 	
 	[UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-		progressBar.frame = CGRectMake(0.f, 0.f, [self screenSize].width * self.progress, STATUS_BAR_HEIGHT);
+		progressBar.frame = CGRectMake(0.f, 0.f, [self screenSize].width * self.progress, kStatusbarHeight);
 	} completion:NULL];
 }
 
@@ -187,7 +193,7 @@
 	}
 	
 	if (barColor == nil) {
-		barColor = [UIColor blackColor];
+		barColor = _topBarDefaultBackgroundColor;
 	}
 	
 	if (textColor == nil) {
@@ -211,7 +217,7 @@
 		[progressIndicator stopAnimating];
 	}
 	progressIndicator.hidden = !showSpinner;
-
+	
 	[UIView animateWithDuration:0.4 animations:^{
 		topBar.alpha = 1.0;
         stringLabel.alpha = 1.0;
@@ -250,7 +256,7 @@
 		return;
 	}
 	
-	topBar = [[UIView alloc] initWithFrame:CGRectMake(0.f, 0.f, [self screenSize].width, STATUS_BAR_HEIGHT)];
+	topBar = [[UIView alloc] initWithFrame:CGRectMake(0.f, 0.f, [self screenSize].width, kStatusbarHeight)];
 	topBar.alpha = 0;
 	[overlayWindow addSubview:topBar];
 }
@@ -260,7 +266,7 @@
 		return;
 	}
 	
-	progressBar = [[UIView alloc] initWithFrame:CGRectMake(0.f, 0.f, 0.f, STATUS_BAR_HEIGHT - 1)];
+	progressBar = [[UIView alloc] initWithFrame:CGRectMake(0.f, 0.f, 0.f, kStatusbarHeight - 1)];
 	progressBar.backgroundColor = [UIColor colorWithRed:75.0/255.0 green:200.0/255.0 blue:0.0/255.0 alpha:0.45];
 	
 	[topBar addSubview:progressBar];
@@ -273,7 +279,7 @@
 	}
 	
 	progressIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-	progressIndicator.center = CGPointMake(0, STATUS_BAR_HEIGHT / 2.0);
+	progressIndicator.center = CGPointMake(0, kStatusbarHeight / 2.0);
 	progressIndicator.transform = CGAffineTransformMakeScale(0.7, 0.7);
 	progressIndicator.hidden = YES;
 	
@@ -287,14 +293,12 @@
 	}
 	
 	stringLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-	stringLabel.textColor = [UIColor colorWithRed:191.0/255.0 green:191.0/255.0 blue:191.0/255.0 alpha:1.0];
+	stringLabel.textColor = [UIColor whiteColor];
 	stringLabel.backgroundColor = [UIColor clearColor];
 	stringLabel.adjustsFontSizeToFitWidth = YES;
 	stringLabel.textAlignment = NSTextAlignmentCenter;
 	stringLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
-	stringLabel.font = [UIFont boldSystemFontOfSize:14.0];
-	stringLabel.shadowColor = [UIColor blackColor];
-	stringLabel.shadowOffset = CGSizeMake(0, -1);
+	stringLabel.font = [UIFont boldSystemFontOfSize:13.0];
 	stringLabel.numberOfLines = 0;
 	stringLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
     
@@ -311,15 +315,15 @@
         case UIInterfaceOrientationLandscapeLeft:
 			rotation = -M_PI_2;
 			break;
-
+			
         case UIInterfaceOrientationLandscapeRight:
 			rotation = M_PI_2;
 			break;
-
+			
         case UIInterfaceOrientationPortraitUpsideDown:
 			rotation = M_PI;
 			break;
-
+			
         case UIInterfaceOrientationPortrait:
         default:
 			break;
