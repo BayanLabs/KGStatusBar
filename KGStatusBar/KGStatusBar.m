@@ -16,7 +16,20 @@
 @implementation KGStatusBarWindow
 
 - (UIViewController *)rootViewController {
-	return [UIApplication sharedApplication].keyWindow.rootViewController;
+	UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
+	if (keyWindow != self) {
+		return keyWindow.rootViewController;
+	}
+	
+	NSArray *windows = [UIApplication sharedApplication].windows;
+	for (NSInteger i = [windows count] - 1; i >= 0; i--) {
+		UIWindow *window = windows[i];
+		if ([window isKindOfClass:[UIWindow class]] && window.windowLevel == UIWindowLevelNormal && window.rootViewController != nil) {
+			return window.rootViewController;
+		}
+	}
+	
+	return nil;
 }
 
 @end
