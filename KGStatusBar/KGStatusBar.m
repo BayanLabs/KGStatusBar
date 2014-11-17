@@ -232,7 +232,7 @@
 	progressIndicator.hidden = !showSpinner;
 	
 	[UIView animateWithDuration:0.4 animations:^{
-		topBar.alpha = 1.0;
+		topBar.alpha = 0.75;
         stringLabel.alpha = 1.0;
     }];
 	
