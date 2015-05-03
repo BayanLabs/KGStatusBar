@@ -150,7 +150,11 @@
     CGFloat stringWidth = 0;
     CGFloat stringHeight = 0;
     if(labelText) {
-        CGSize stringSize = [labelText sizeWithFont:stringLabel.font constrainedToSize:CGSizeMake(topBar.frame.size.width, topBar.frame.size.height)];
+		CGSize stringSize = [labelText boundingRectWithSize:CGSizeMake(topBar.frame.size.width, topBar.frame.size.height)
+													options:0
+												 attributes:@{ NSFontAttributeName: stringLabel.font }
+													context:nil].size;
+		
         stringWidth = stringSize.width;
         stringHeight = stringSize.height;
         
