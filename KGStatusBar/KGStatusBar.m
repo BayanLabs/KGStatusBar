@@ -266,6 +266,7 @@
 	CGAffineTransform rotationTransform = CGAffineTransformMakeRotation([self rotation]);
 	overlayWindow.transform = rotationTransform;
 	overlayWindow.bounds = CGRectMake(0.f, 0.f, [self screenSize].width, [self screenSize].height);
+	overlayWindow.rootViewController = [[UIViewController alloc] init];
 }
 
 - (void)createTopBar {
